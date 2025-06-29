@@ -12,9 +12,19 @@ public class TaskDAO {
     private static final String USER = "root";
     private static final String PASSWORD = "Zaq12wsx";
 
-    //DBに接続しINSERT文を実行
+    //INSERT文を実行
     public void insertTask(String task, String deadline) throws SQLException {
         String sql = "INSERT INTO todos (task, deadline) VALUES (?, ?)";
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, task);
+            stmt.setDate(2, Date.valueOf(deadline));
+            stmt.executeUpdate();
+        }
+    }
+    //DELETE文を実行
+    public void deleteTask(String task, String deadline) throws SQLException {
+        String sql = "DELETE FROM todos WHERE task = ? AND deadline = ?";
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, task);

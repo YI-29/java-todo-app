@@ -1,6 +1,7 @@
 package com.todolist;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.FocusAdapter;
@@ -8,11 +9,14 @@ import java.awt.event.FocusEvent;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
@@ -26,7 +30,7 @@ public class View extends JFrame {
 	public JTextField deadline;
 	public JDateChooser deadlineChooser;
 	public JTextField task;
-	public JTextArea displayArea; 
+	public JPanel taskListPanel;
 
 	
 	public View() {
@@ -51,19 +55,43 @@ public class View extends JFrame {
 		setPlaceholder(task,"タスクを入力");
 		
 		//登録ボタンを作成
-		JButton button = new JButton("登録");
-		contentPane.add(button);
+		JButton addButton = new JButton("登録");
+		contentPane.add(addButton);
 		
 		//登録ボタン押下時の処理はコントローラに委譲
-		button.addActionListener(new TaskManager(this));
+		addButton.addActionListener(new TaskManager(this));
 		
 		//タスク表示エリア
-		displayArea = new JTextArea(10, 30);
-		displayArea.setEditable(false); // ユーザー編集不可
-		displayArea.setLineWrap(true);  // 自動改行
-		displayArea.setWrapStyleWord(true);
-	    contentPane.add(new JScrollPane(displayArea));		
+	    taskListPanel = new JPanel();
+	    taskListPanel.setLayout(new BoxLayout(taskListPanel, BoxLayout.Y_AXIS));
+	    JScrollPane scrollPane = new JScrollPane(taskListPanel);
+	    scrollPane.setPreferredSize(new Dimension(400, 150));
+	    contentPane.add(scrollPane);
 	}
+	
+	public void addTaskPanel(String taskText, String deadlineText, TaskManager manager) {
+	    JPanel row = new JPanel();
+	    row.setLayout(new BoxLayout(row, BoxLayout.X_AXIS));
+	    row.setAlignmentX(Component.LEFT_ALIGNMENT); 
+	    
+	    JLabel label = new JLabel("期限：" + deadlineText + "　タスク：" + taskText);
+	    JButton deleteButton = new JButton("削除");
+	    int height = label.getPreferredSize().height;
+	    deleteButton.setMaximumSize(new Dimension(80, height));
+
+		//削除ボタン押下時の処理はコントローラに委譲
+	    deleteButton.addActionListener(e -> manager.deleteTask(row, taskText, deadlineText));
+	    
+	    row.add(label);
+	    row.add(Box.createHorizontalStrut(10));  // ラベルとボタンの間隔
+	    row.add(deleteButton);
+	    row.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
+	    taskListPanel.add(row);
+	    taskListPanel.revalidate();
+	    taskListPanel.repaint();
+	}
+
 	
 	//期限日を文字列で取得
 	public String getSelectedDeadline() {

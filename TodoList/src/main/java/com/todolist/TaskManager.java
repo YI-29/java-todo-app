@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 public class TaskManager extends JFrame implements ActionListener  {
 	
@@ -31,15 +32,35 @@ public class TaskManager extends JFrame implements ActionListener  {
         }
 		
         //リストにタスクを表示
-		String input = "期限：" + deadlineText + "　タスク：" + taskText;
-	    view.displayArea.append(input + "\n"); 
+	    view.addTaskPanel(taskText, deadlineText, this);
 	    
-	    //INSERT文を実行
+	    //DBに登録
 	    try {
             dao.insertTask(taskText, deadlineText);
         } catch (Exception ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(view, "DB登録エラー: " + ex.getMessage(), "エラー", JOptionPane.ERROR_MESSAGE);
         }
+	    // 入力欄リセット
+	    view.task.setText("タスクを入力");
+	}
+	
+	// 削除処理（画面とDBの両方）
+	public void deleteTask(JPanel rowPanel, String taskText, String deadlineText) {
+	    int confirm = JOptionPane.showConfirmDialog(view, "このタスクを削除しますか？", "確認", JOptionPane.YES_NO_OPTION);
+	    if (confirm == JOptionPane.YES_OPTION) {
+	        // 表示から削除
+	        view.taskListPanel.remove(rowPanel);
+	        view.taskListPanel.revalidate();
+	        view.taskListPanel.repaint();
+
+	        // DBから削除
+	        try {
+	            dao.deleteTask(taskText, deadlineText); 
+	        } catch (Exception ex) {
+	            ex.printStackTrace();
+	            JOptionPane.showMessageDialog(view, "DB削除エラー: " + ex.getMessage(), "エラー", JOptionPane.ERROR_MESSAGE);
+	        }
+	    }
 	}
 }
