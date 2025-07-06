@@ -32,4 +32,16 @@ public class TaskDAO {
             stmt.executeUpdate();
         }
     }
+    public void updateTask(String oldTask, String oldDeadline, String newTask, String newDeadline) throws SQLException {
+        String sql = "UPDATE todos SET task = ?, deadline = ? WHERE task = ? AND deadline = ?";
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, newTask);
+            stmt.setDate(2, Date.valueOf(newDeadline));
+            stmt.setString(3, oldTask);
+            stmt.setDate(4, Date.valueOf(oldDeadline));
+            stmt.executeUpdate();
+        }
+    }
+
 }

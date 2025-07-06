@@ -38,7 +38,7 @@ public class View extends JFrame {
 		//画面を作成
 		setTitle("TODOリスト");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
+		setBounds(100, 100, 650, 450);
 		contentPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 30));
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -65,7 +65,7 @@ public class View extends JFrame {
 	    taskListPanel = new JPanel();
 	    taskListPanel.setLayout(new BoxLayout(taskListPanel, BoxLayout.Y_AXIS));
 	    JScrollPane scrollPane = new JScrollPane(taskListPanel);
-	    scrollPane.setPreferredSize(new Dimension(400, 150));
+	    scrollPane.setPreferredSize(new Dimension(600, 300));
 	    contentPane.add(scrollPane);
 	}
 	
@@ -76,15 +76,20 @@ public class View extends JFrame {
 	    
 	    JLabel label = new JLabel("期限：" + deadlineText + "　タスク：" + taskText);
 	    JButton deleteButton = new JButton("削除");
-	    int height = label.getPreferredSize().height;
-	    deleteButton.setMaximumSize(new Dimension(80, height));
+	    JButton updateButton = new JButton("編集");
+	    deleteButton.setMaximumSize(new Dimension(65, 25));
+	    updateButton.setMaximumSize(new Dimension(65, 25));
 
-		//削除ボタン押下時の処理はコントローラに委譲
+		//削除・編集ボタン押下時の処理はコントローラに委譲
 	    deleteButton.addActionListener(e -> manager.deleteTask(row, taskText, deadlineText));
+	    updateButton.addActionListener(e -> manager.updateTask(row, taskText, deadlineText, label, updateButton));
 	    
+	    //表示エリアにタスクを表示
 	    row.add(label);
-	    row.add(Box.createHorizontalStrut(10));  // ラベルとボタンの間隔
+	    row.add(Box.createHorizontalStrut(10));
 	    row.add(deleteButton);
+	    row.add(Box.createHorizontalStrut(10));
+	    row.add(updateButton);
 	    row.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
 	    taskListPanel.add(row);
